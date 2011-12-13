@@ -17,6 +17,11 @@ public class RelativizesFilePaths {
 		String toPath = to.getCanonicalPath();
 
 		String root = getCommonPrefix(new String[] { fromPath, toPath });
+		
+		if (root.equals("")) {
+			return "file://" + convertSlashes(trimLeadingSlashIfNecessary(new StringBuffer(toPath)));
+		}		
+		
 		StringBuffer result = new StringBuffer();
 		if (fromPathIsNotADirectAncestor(fromPath, root)) {
 			for (String dir : divergentDirectories(root, fromPath)) {

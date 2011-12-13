@@ -12,6 +12,7 @@ import org.eclipse.jetty.server.nio.SelectChannelConnector;
 
 import com.github.searls.jasmine.io.RelativizesFilePaths;
 import com.github.searls.jasmine.server.JasmineResourceHandler;
+import com.github.searls.jasmine.model.ScriptSearch;
 
 /**
  * @goal bdd
@@ -37,9 +38,22 @@ public class ServerMojo extends AbstractJasmineMojo {
 	
 	@Override
 	public void run() throws Exception {
+		if (isOutsideProjectDir(sources) || isOutsideProjectDir(specs)) {
+			String url = "file://" + (jasmineTargetDir + File.separator).replace(File.separatorChar, '/') + manualSpecRunnerHtmlFileName;
+		
+			getLog().info("Launching " + url);
+			java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+			
+			return;
+		}
+	
 		addConnectorToServer();
         addHandlersToServer();
         startServer();
+	}
+	
+	private boolean isOutsideProjectDir(ScriptSearch files) throws IOException {
+		return relativizesFilePaths.relativize(mavenProject.getBasedir(), files.getDirectory()).startsWith("file://");
 	}
 
 	private void addConnectorToServer() {

@@ -10,7 +10,21 @@
 <body>
 	<script type="text/javascript">
 		if(window.location.href.indexOf("ManualSpecRunner.html") !== -1) {
-			document.body.appendChild(document.createTextNode("Warning: opening this HTML file directly from the file system is deprecated. You should instead try running `mvn jasmine:bdd` from the command line, and then visit `http://localhost:8234` in your browser. "))
+			var scriptTags = document.getElementsByTagName('script')
+			,   i
+			,   containsLocalScripts = false
+			;
+			
+			for (i = 0; i < scriptTags.length; ++i) {
+				if (/^file:\/\//.exec(scriptTags[i].src)) {
+					containsLocalScripts = true;
+					break;
+				}
+			}
+		
+			if (!containsLocalScripts) {
+				document.body.appendChild(document.createTextNode("Warning: opening this HTML file directly from the file system is deprecated. You should instead try running `mvn jasmine:bdd` from the command line, and then visit `http://localhost:8234` in your browser. "))
+			}
 		}
 	
 		var executeJasmineSpecs = function(){
